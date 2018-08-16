@@ -84,7 +84,7 @@ class PrepareClassifyData(object):
     def __select_num_words(self, cur):
         if len(cur) <= 2 * self._config.max_document_length:
             return cur
-        return cur[0:self._config.max_document_length] + cur[len(cur)-600:]
+        return cur[0:self._config.max_document_length] + "。" + cur[len(cur)-self._config.max_document_length:]
 
     def __next__(self):
         document_lst = []

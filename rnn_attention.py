@@ -5,7 +5,7 @@ import tensorflow as tf
 class BaseModel(object):
     def __init__(self):
         self.sess = tf.Session()
-        self.checkpointDir = "model/checkpoints/"
+        self.checkpointDir = "model/"
 
     def _save(self):
         saver = tf.train.Saver()
@@ -159,4 +159,3 @@ class RnnAttention(BaseModel):
                     fetches=[self.accuracy_val, self.loss],
                     feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 1.})
                 print("<Test>\t EPOCH: [%d] STEP: [%d] LOSS: [%.3F]\t ACC: [%.3f]" % (i + 1, step, loss, acc))
-            self._save()
