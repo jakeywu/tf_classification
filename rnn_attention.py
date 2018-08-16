@@ -145,7 +145,8 @@ class RnnAttention(BaseModel):
                 _, loss, acc = self.sess.run(
                     fetches=[self.train_op, self.loss, self.accuracy_val],
                     feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 0.5})
-                print("<Train>\t EPOCH: [%d] STEP: [%d] LOSS: [%.3F]\t ACC: [%.3f]" % (i+1, step, loss, acc))
+                print("<Train>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
+                      (i+1, int(step/flag.batch_size), step, loss, acc))
             self._save()
 
     def test(self, flag):
@@ -158,4 +159,5 @@ class RnnAttention(BaseModel):
                 acc, loss = self.sess.run(
                     fetches=[self.accuracy_val, self.loss],
                     feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 1.})
-                print("<Test>\t EPOCH: [%d] STEP: [%d] LOSS: [%.3F]\t ACC: [%.3f]" % (i + 1, step, loss, acc))
+                print("<Test>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
+                      (i + 1, int(step/flag.batch_size), step, loss, acc))
