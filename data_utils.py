@@ -51,27 +51,40 @@ class PrepareClassifyData(object):
             if category_id == -1:
                 continue
 
-            char_lst = []
-            for _char in _x:
-                vocab_id = self._vocabDict.get(_char, -1)
-                if vocab_id == -1:
+            sentence_lst = []
+            for sentence in _x.split("。"):
+                char_lst = []
+                if len(sentence) <= 3:
                     continue
-                char_lst.append(vocab_id)
+                for char in sentence:
+                    vocab_id = self._vocabDict.get(char, -1)
+                    if vocab_id == -1:
+                        continue
+                    char_lst.append(vocab_id)
                 if not char_lst:
                     continue
-
-            if not char_lst or not _y:
+                sentence_lst.append(char_lst)
+            if not sentence_lst or not _y:
                 continue
-            dataset_x.append(char_lst)
+            dataset_x.append(sentence_lst)
             dataset_y.append(category_id)
         return dataset_x, dataset_y
 
     @staticmethod
     def __padding_batch_data(deal_x):
         max_len_document = max([len(document) for document in deal_x])
+        max_len_sentence = max(
+            [max(_len) for _len in [[len(sentence) for sentence in document] for document in deal_x]])
         for document in deal_x:
-            document.extend((max_len_document - len(document)) * [0])
+            for sentence in document:
+                sentence.extend((max_len_sentence - len(sentence)) * [0])
+            document.extend((max_len_document - len(document)) * [max_len_sentence * [0]])
         return deal_x
+
+    def __select_num_words(self, cur):
+        if len(cur) <= 2 * self._config.max_document_length:
+            return cur
+        return cur[0:self._config.max_document_length] + cur[len(cur)-600:]
 
     def __next__(self):
         document_lst = []
@@ -82,7 +95,7 @@ class PrepareClassifyData(object):
                 if not cur:
                     continue
                 count += 1
-                document_lst.append(cur[0:600])
+                document_lst.append(self.__select_num_words(cur))
         except StopIteration as iter_exception:
             if count == 0:
                 raise iter_exception
@@ -94,4 +107,3 @@ class PrepareClassifyData(object):
 
     def __iter__(self):
         return self
-
