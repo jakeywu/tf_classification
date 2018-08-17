@@ -1,28 +1,58 @@
 import tensorflow as tf
-from rnn_attention import RnnAttention
 
-tf.flags.DEFINE_integer(name="epoch", default=2, help="maximum epochs")
-tf.flags.DEFINE_integer(name="batch_size", default=64, help="batch size")
-tf.flags.DEFINE_integer(name="vocab_size", default=5000, help="vocab num of chinese")
-tf.flags.DEFINE_integer(name="embedding_size", default=128, help="embedding size")
-tf.flags.DEFINE_integer(name="word_num_hidden", default=64, help="lstm num hidden")
-tf.flags.DEFINE_integer(name="sentence_num_hidden", default=64, help="lstm num hidden")
-tf.flags.DEFINE_integer(name="num_classes", default=10, help="num of categories")
-tf.flags.DEFINE_float(name="learning_rate", default=1e-3, help="learning rate ")
-
-tf.flags.DEFINE_integer(name="word_attention_size", default=64, help="word attention size")
-tf.flags.DEFINE_integer(name="sentence_attention_size", default=32, help="sentence attention size")
-tf.flags.DEFINE_integer(name="max_document_length", default=600, help="max_length of context; before 600 end 600")
-
-tf.flags.DEFINE_string(name="classify_names", default="体育,财经,房产,家居,教育,科技,时尚,时政,游戏,娱乐", help="category tags")
+tf.flags.DEFINE_string(name="model", default="cnn", help="selected in [rnn, cnn, rnn_attention]")
 
 FLAG = tf.flags.FLAGS
 
 
+class BaseInitHyperParams(object):
+    epoch = 2  # 轮次
+    batch_size = 64  # 批次
+    vocab_size = 5000  # 字数
+    embedding_size = 128  # 字向量维度
+    learning_rate = 1e-3  # 学习速率
+    num_classes = 10  # 类别树目
+    classify_names = "体育,财经,房产,家居,教育,科技,时尚,时政,游戏,娱乐"  # 类别名称/具体根据语料设定
+    max_document_length = 600  # 文章首位字符数量, 考虑新闻文章首位重要性, 选择 2 * max_document_length数量
+
+
+class RnnAttentionParams(BaseInitHyperParams):
+    """
+    Bi-GRU + Attention
+    """
+    word_num_hidden = 64  # 字神经元个数
+    sentence_num_hidden = 64  # 句子神经元个数
+    word_attention_size = 64  # 字注意力
+    sentence_attention_size = 32  # 句子注意力
+
+
+class RnnParams(BaseInitHyperParams):
+    pass
+
+
+class CnnParams(BaseInitHyperParams):
+    num_filters = 64
+    sequence_length = 1200
+    filter_sizes = [3, 6, 9]
+
+
 def main(_):
-    model = RnnAttention(FLAG)
-    model.train(FLAG)
-    model.test(FLAG)
+    if FLAG.model == "cnn":
+        params = CnnParams()
+        from cnn_model import CnnModel
+        model = CnnModel(params)
+    elif FLAG.model == "rnn":
+        params = CnnParams()
+        from rnn_attention_model import RnnAttentionModel
+        model = RnnAttentionModel(params)
+    elif FLAG.model == "rnn_attention":
+        from rnn_attention_model import RnnAttentionModel
+        params = RnnAttentionParams()
+        model = RnnAttentionModel(params)
+    else:
+        raise Exception("model only can be in [cnn, rnn, rnn_attention]")
+    model.train(params)
+    model.test(params)
 
 
 if __name__ == "__main__":

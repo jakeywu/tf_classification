@@ -5,10 +5,15 @@ import random
 
 
 class PrepareClassifyData(object):
-    def __init__(self, conf, mode="train"):
+    def __init__(self, conf, mode="train", doc_sentence_word=False):
+        """
+        :param mode: 数据模式
+        :param doc_sentence_word: 文本预处理形式, True代表[Document*Sentence*Word] False代表[Document*Word]
+        """
         self._currPath = os.path.dirname(__file__)
         self._config = conf
         self._mode = mode
+        self._dataPrepareMode = doc_sentence_word
         self._sourceData = self.__read_dataset()
         self._vocabDict = self.__load_chinese_vocab()
         self._categoryId = self.__classify_names()
@@ -41,7 +46,7 @@ class PrepareClassifyData(object):
             category_id[v] = i
         return category_id
 
-    def __deal_batch_data(self, document_lst):
+    def __deal_batch_data_3d(self, document_lst):
         dataset_x = []
         dataset_y = []
         for document in document_lst:
@@ -70,8 +75,29 @@ class PrepareClassifyData(object):
             dataset_y.append(category_id)
         return dataset_x, dataset_y
 
+    def __deal_batch_data_2d(self, document_lst):
+        dataset_x = []
+        dataset_y = []
+        for document in document_lst:
+            _y = document.split("\t")[0]
+            _x = document.lstrip(_y + "\t").strip()
+            category_id = self._categoryId.get(_y, -1)
+            if category_id == -1:
+                continue
+            char_lst = []
+            for _char in _x:
+                vocab_id = self._vocabDict.get(_char, -1)
+                if vocab_id == -1:
+                    continue
+                char_lst.append(vocab_id)
+            if not char_lst or not _y:
+                continue
+            dataset_x.append(char_lst)
+            dataset_y.append(category_id)
+        return dataset_x, dataset_y
+
     @staticmethod
-    def __padding_batch_data(deal_x):
+    def __padding_batch_data_3d(deal_x):
         max_len_document = max([len(document) for document in deal_x])
         max_len_sentence = max(
             [max(_len) for _len in [[len(sentence) for sentence in document] for document in deal_x]])
@@ -79,6 +105,15 @@ class PrepareClassifyData(object):
             for sentence in document:
                 sentence.extend((max_len_sentence - len(sentence)) * [0])
             document.extend((max_len_document - len(document)) * [max_len_sentence * [0]])
+        return deal_x
+
+    def __padding_batch_data_2d(self, deal_x):
+        if hasattr(self._config, "sequence_length"):
+            max_len_document = max(max([len(document) for document in deal_x]), self._config.sequence_length)
+        else:
+            max_len_document = max([len(document) for document in deal_x])
+        for document in deal_x:
+            document.extend((max_len_document - len(document)) * [0])
         return deal_x
 
     def __select_num_words(self, cur):
@@ -99,9 +134,12 @@ class PrepareClassifyData(object):
         except StopIteration as iter_exception:
             if count == 0:
                 raise iter_exception
-
-        deal_x, deal_y = self.__deal_batch_data(document_lst)
-        deal_x = self.__padding_batch_data(deal_x)
+        if self._dataPrepareMode:
+            deal_x, deal_y = self.__deal_batch_data_3d(document_lst)
+            deal_x = self.__padding_batch_data_3d(deal_x)
+        else:
+            deal_x, deal_y = self.__deal_batch_data_2d(document_lst)
+            deal_x = self.__padding_batch_data_2d(deal_x)
 
         return np.array(deal_x, dtype=np.int32), np.array(deal_y, dtype=np.int32)
 

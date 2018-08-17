@@ -9,16 +9,16 @@ class BaseModel(object):
 
     def _save(self):
         saver = tf.train.Saver()
-        saver.save(sess=self.sess, save_path="{}-classification".format(self.checkpointDir))
+        saver.save(sess=self.sess, save_path="{}-rnn-attention".format(self.checkpointDir))
 
     def _load(self):
         saver = tf.train.Saver()
         saver.restore(sess=self.sess, save_path=tf.train.latest_checkpoint(self.checkpointDir))
 
 
-class RnnAttention(BaseModel):
+class RnnAttentionModel(BaseModel):
     def __init__(self, conf):
-        super(RnnAttention, self).__init__()
+        super(RnnAttentionModel, self).__init__()
         self.epoch = conf.epoch
         self.num_classes = conf.num_classes
         self.vocab_size = conf.vocab_size
@@ -82,7 +82,7 @@ class RnnAttention(BaseModel):
             u = tf.get_variable(
                 name="w_2", shape=[self.word_attention_size, 1], initializer=tf.truncated_normal_initializer(stddev=0.1))
             v = tf.nn.xw_plus_b(tf.reshape(self.word_encoder_output, [-1, 2 * self.word_num_hidden]), w_1, b_1)  # B*T*A
-            s = tf.matmul(v, u)
+            s = tf.matmul(tf.nn.tanh(v), u)
             alphas = tf.nn.softmax(tf.reshape(s, [self.origin_shape[0] * self.origin_shape[1], 1, self.origin_shape[2]]))
             self.word_attention_output = tf.reduce_sum(tf.matmul(alphas, self.word_encoder_output), axis=1)
 
@@ -139,7 +139,7 @@ class RnnAttention(BaseModel):
         print("\nbegin train ....\n")
         step = 0
         for i in range(self.epoch):
-            trainset = PrepareClassifyData(flag, "train")
+            trainset = PrepareClassifyData(flag, "train", True)
             for input_x, input_y in trainset:
                 step += (i+1) * len(input_y)
                 _, loss, acc = self.sess.run(
@@ -152,12 +152,11 @@ class RnnAttention(BaseModel):
     def test(self, flag):
         print("\nbegin test ....\n")
         step = 0
-        for i in range(self.epoch):
-            testset = PrepareClassifyData(flag, "test")
-            for input_x, input_y in testset:
-                step += (i + 1) * len(input_y)
-                acc, loss = self.sess.run(
-                    fetches=[self.accuracy_val, self.loss],
-                    feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 1.})
-                print("<Test>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
-                      (i + 1, int(step/flag.batch_size), step, loss, acc))
+        testset = PrepareClassifyData(flag, "test")
+        for input_x, input_y in testset:
+            step += (i + 1) * len(input_y)
+            acc, loss = self.sess.run(
+                fetches=[self.accuracy_val, self.loss],
+                feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 1.})
+            print("<Test>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
+                  (i + 1, int(step/flag.batch_size), step, loss, acc))
