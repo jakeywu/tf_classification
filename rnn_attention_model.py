@@ -151,12 +151,12 @@ class RnnAttentionModel(BaseModel):
 
     def test(self, flag):
         print("\nbegin test ....\n")
-        step = 0
+        _iter = 0
         testset = PrepareClassifyData(flag, "test")
         for input_x, input_y in testset:
-            step += (i + 1) * len(input_y)
+            _iter += 1
             acc, loss = self.sess.run(
                 fetches=[self.accuracy_val, self.loss],
                 feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 1.})
-            print("<Test>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
-                  (i + 1, int(step/flag.batch_size), step, loss, acc))
+            print("<Test>\t Iter: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
+                  (_iter, loss, acc))
