@@ -9,8 +9,8 @@ class CnnModel(object):
         self._embedding_layers()
         self._inference()
         self._build_train_op()
-        self.checkpointDir = "model/cnn/"
         self.sess = tf.Session()
+        self.checkpointDir = "model/cnn/"
 
     def _init_placeholder(self):
         self.inputs = tf.placeholder(tf.int32, [None, self._config.sequence_length], name="input_x")

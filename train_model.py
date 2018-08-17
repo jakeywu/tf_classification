@@ -27,7 +27,8 @@ class RnnAttentionParams(BaseInitHyperParams):
 
 
 class RnnParams(BaseInitHyperParams):
-    pass
+    num_hidden = 128
+    dense_units = 128
 
 
 class CnnParams(BaseInitHyperParams):
@@ -42,9 +43,9 @@ def main(_):
         from cnn_model import CnnModel
         model = CnnModel(params)
     elif FLAG.model == "rnn":
-        params = CnnParams()
-        from rnn_attention_model import RnnAttentionModel
-        model = RnnAttentionModel(params)
+        params = RnnParams()
+        from rnn_model import RnnModel
+        model = RnnModel(params)
     elif FLAG.model == "rnn_attention":
         from rnn_attention_model import RnnAttentionModel
         params = RnnAttentionParams()

@@ -66,10 +66,12 @@ class RnnAttentionModel(BaseModel):
             word_inputs = tf.reshape(
                 self.embedded_inputs, [self.origin_shape[0] * self.origin_shape[1], self.origin_shape[2], self.embedding_size])
             word_length = tf.reshape(self.word_length, [self.origin_shape[0] * self.origin_shape[1]])
-            (output_fw, output_bw), _ = tf.nn.bidirectional_dynamic_rnn(
+            (output_fw, output_bw), (a, b) = tf.nn.bidirectional_dynamic_rnn(
                 cell_fw=cell_fw, cell_bw=cell_bw, inputs=word_inputs, sequence_length=word_length,
                 dtype=tf.float32, time_major=False
             )
+            import pdb
+            pdb.set_trace()
             self.word_encoder_output = tf.nn.dropout(x=tf.concat([output_fw, output_bw], axis=2), keep_prob=self.keep_prob)
 
     def _word_attention_layers(self):
