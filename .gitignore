@@ -5,5 +5,4 @@ tmp/
 __init__.py
 __pycache__/
 model/
-data/
 tmp.py
