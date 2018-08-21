@@ -19,7 +19,7 @@ tensorflow==1.8.0
 
 ### 参考文献及Demo
 
-主要采用了数据集: [CNN中文文本分类Demo](https://github.com/gaussic/text-classification-cnn-rnn)
+主要采用了数据集和CNN相关文档: [CNN中文文本分类Demo](https://github.com/gaussic/text-classification-cnn-rnn)
 
 分别对字和句子进行Attention处理: [Attention机制论文](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 
