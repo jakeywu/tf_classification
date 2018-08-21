@@ -5,6 +5,7 @@
 ### 环境　推荐[Anaconda mini管理](https://www.jianshu.com/p/169403f7e40c)
 
 python3.6.5 
+
 tensorflow==1.8.0
 
 
