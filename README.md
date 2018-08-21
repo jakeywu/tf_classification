@@ -7,8 +7,9 @@
 python3.6.5 
 tensorflow==1.8.0
 
+
 ### 项目文件.
-1. data_utils.py 为数据预处理文件. 可以有`Document*Sentence*Word` 模式 和`Document*Word`模式.
+1. data_utils.py 为数据预处理文件. 可以有`Document*Sentence*Word` 模式 和`Document*Word`模式. 预处理时采用收尾截取一定数量文本作为训练样本(总分总).
 2. cnn_model.py 为cnn模型文件, 取固定句子长度. 采用`Document*Word`模式
 3. rnn_model.py 为rnn`bilstm`模型文件, 每批次句子长度不固定. 采用`Document*Word`模式
 4. rnn_attention.py 为rnn`gru` attention模型文件, 句子长度不固定. 采用`Document*Sentence*Word`模式
