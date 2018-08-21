@@ -6,7 +6,7 @@ FLAG = tf.flags.FLAGS
 
 
 class BaseInitHyperParams(object):
-    epoch = 2  # 轮次
+    epoch = 3  # 轮次
     batch_size = 64  # 批次
     vocab_size = 5000  # 字数
     embedding_size = 128  # 字向量维度

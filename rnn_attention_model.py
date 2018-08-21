@@ -5,15 +5,11 @@ import tensorflow as tf
 class BaseModel(object):
     def __init__(self):
         self.sess = tf.Session()
-        self.checkpointDir = "model/"
+        self.checkpointDir = "model/rnn_attention/"
 
     def _save(self):
         saver = tf.train.Saver()
-        saver.save(sess=self.sess, save_path="{}-rnn-attention".format(self.checkpointDir))
-
-    def _load(self):
-        saver = tf.train.Saver()
-        saver.restore(sess=self.sess, save_path=tf.train.latest_checkpoint(self.checkpointDir))
+        saver.save(sess=self.sess, save_path=self.checkpointDir + "model")
 
 
 class RnnAttentionModel(BaseModel):
@@ -66,12 +62,10 @@ class RnnAttentionModel(BaseModel):
             word_inputs = tf.reshape(
                 self.embedded_inputs, [self.origin_shape[0] * self.origin_shape[1], self.origin_shape[2], self.embedding_size])
             word_length = tf.reshape(self.word_length, [self.origin_shape[0] * self.origin_shape[1]])
-            (output_fw, output_bw), (a, b) = tf.nn.bidirectional_dynamic_rnn(
+            (output_fw, output_bw), _ = tf.nn.bidirectional_dynamic_rnn(
                 cell_fw=cell_fw, cell_bw=cell_bw, inputs=word_inputs, sequence_length=word_length,
                 dtype=tf.float32, time_major=False
             )
-            import pdb
-            pdb.set_trace()
             self.word_encoder_output = tf.nn.dropout(x=tf.concat([output_fw, output_bw], axis=2), keep_prob=self.keep_prob)
 
     def _word_attention_layers(self):
@@ -126,7 +120,7 @@ class RnnAttentionModel(BaseModel):
                 name="b", shape=[self.num_classes], initializer=tf.constant_initializer(0.)
             )
             self.logits = tf.matmul(self.sentence_attention_output, w) + b
-            self.predictions = tf.argmax(self.logits, axis=1)
+            self.predictions = tf.argmax(self.logits, axis=1, name="predictions")
             correct_prediction = tf.equal(tf.cast(self.predictions, tf.int32), self.targets)
             self.accuracy_val = tf.reduce_mean(tf.cast(correct_prediction, "float"), name="accuracy")
 
@@ -154,7 +148,7 @@ class RnnAttentionModel(BaseModel):
     def test(self, flag):
         print("\nbegin test ....\n")
         _iter = 0
-        testset = PrepareClassifyData(flag, "test")
+        testset = PrepareClassifyData(flag, "test", True)
         for input_x, input_y in testset:
             _iter += 1
             acc, loss = self.sess.run(

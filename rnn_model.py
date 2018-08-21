@@ -10,7 +10,7 @@ class RnnModel(object):
         self._inference()
         self._build_train_op()
         self.sess = tf.Session()
-        self.checkpointDir = "model/bi_lstm/"
+        self.checkpointDir = "model/rnn/"
 
     def _init_placeholder(self):
         self.inputs = tf.placeholder(dtype=tf.int32, shape=[None, None], name="input_x")
@@ -59,11 +59,7 @@ class RnnModel(object):
         if not tf.gfile.Exists(self.checkpointDir):
             tf.gfile.MakeDirs(self.checkpointDir)
         saver = tf.train.Saver()
-        saver.save(sess=self.sess, save_path=self.checkpointDir)
-
-    def _load(self):
-        saver = tf.train.Saver()
-        saver.restore(sess=self.sess, save_path=tf.train.latest_checkpoint(self.checkpointDir))
+        saver.save(sess=self.sess, save_path=self.checkpointDir + "model")
 
     def train(self, flag):
         self.sess.run(tf.global_variables_initializer())
@@ -72,7 +68,6 @@ class RnnModel(object):
         for i in range(flag.epoch):
             trainset = PrepareClassifyData(flag, "train", False)
             for input_x, input_y in trainset:
-                print(input_x.shape)
                 step += (i+1) * len(input_y)
                 _, loss, acc = self.sess.run(
                     fetches=[self.train_op, self.loss, self.accuracy],

@@ -87,11 +87,7 @@ class CnnModel(object):
         if not tf.gfile.Exists(self.checkpointDir):
             tf.gfile.MakeDirs(self.checkpointDir)
         saver = tf.train.Saver()
-        saver.save(sess=self.sess, save_path=self.checkpointDir)
-
-    def _load(self):
-        saver = tf.train.Saver()
-        saver.restore(sess=self.sess, save_path=tf.train.latest_checkpoint(self.checkpointDir))
+        saver.save(sess=self.sess, save_path=self.checkpointDir + "model")
 
     def train(self, flag):
         self.sess.run(tf.global_variables_initializer())
