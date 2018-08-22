@@ -134,15 +134,17 @@ class RnnAttentionModel(BaseModel):
         self.sess.run(tf.global_variables_initializer())
         print("\nbegin train ....\n")
         step = 0
+        _iter = 0
         for i in range(self.epoch):
             trainset = PrepareClassifyData(flag, "train", True)
             for input_x, input_y in trainset:
-                step += (i+1) * len(input_y)
+                step += len(input_y)
+                _iter += 1
                 _, loss, acc = self.sess.run(
                     fetches=[self.train_op, self.loss, self.accuracy_val],
                     feed_dict={self.inputs: input_x, self.targets: input_y, self.keep_prob: 0.5})
                 print("<Train>\t Epoch: [%d] Iter: [%d] Step: [%d] Loss: [%.3F]\t Acc: [%.3f]" %
-                      (i+1, int(step/flag.batch_size), step, loss, acc))
+                      (i+1, _iter, step, loss, acc))
             self._save()
 
     def test(self, flag):
