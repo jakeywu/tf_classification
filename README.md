@@ -17,7 +17,14 @@ tensorflow==1.8.0
 5. train_model.py 为模型加载文件, 分为公共超参数和自定义参数.
 6. predict.py 为预测文件. 
 
-### 效果比对
+### 效果比对(分为训练集和测试集)
+1. cnn 
+![data/cnn_train.png](data/cnn_train.png)
+![data/cnn_test.png](data/cnn_test.png)
+
+2. rnn_attention
+![data/rnn_attention_train.png](data/rnn_attention_train.png)
+![data/rnn_attention_test.png](data/rnn_attention_test.png)
 
 ### 参考文献及Demo
 
