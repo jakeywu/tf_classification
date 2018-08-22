@@ -18,13 +18,13 @@ tensorflow==1.8.0
 6. predict.py 为预测文件. 
 
 ### 效果比对(分为训练集和测试集)
-1. cnn 
+#### cnn 
 
 ![data/cnn_train.png](data/cnn_train.png)
 
 ![data/cnn_test.png](data/cnn_test.png)
 
-2. rnn_attention
+#### rnn_attention
 
 ![data/rnn_attention_train.png](data/rnn_attention_train.png)
 
