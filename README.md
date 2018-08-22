@@ -20,12 +20,34 @@ tensorflow==1.8.0
 ### 效果比对(分为训练集和测试集)
 #### cnn 
 
-![cnn](data/cnn.png)
+```angular2html
+2338 <Train>  Epoch: [3] Iter: [2334] Step: [149279] Loss: [0.044]    Acc: [1.000]
+2339 <Train>  Epoch: [3] Iter: [2335] Step: [149343] Loss: [0.163]    Acc: [0.953]
+2340 <Train>  Epoch: [3] Iter: [2336] Step: [149407] Loss: [0.029]    Acc: [1.000]
+2341 <Train>  Epoch: [3] Iter: [2337] Step: [149471] Loss: [0.032]    Acc: [1.000]
+2342 <Train>  Epoch: [3] Iter: [2338] Step: [149535] Loss: [0.140]    Acc: [0.938]
+2343 <Train>  Epoch: [3] Iter: [2339] Step: [149599] Loss: [0.134]    Acc: [0.953]
+2344 <Train>  Epoch: [3] Iter: [2340] Step: [149663] Loss: [0.120]    Acc: [0.953]
+2345 <Train>  Epoch: [3] Iter: [2341] Step: [149727] Loss: [0.112]    Acc: [0.953]
+2346 <Train>  Epoch: [3] Iter: [2342] Step: [149791] Loss: [0.048]    Acc: [0.969]
+2347 <Train>  Epoch: [3] Iter: [2343] Step: [149855] Loss: [0.045]    Acc: [0.984]
+2348 <Train>  Epoch: [3] Iter: [2344] Step: [149919] Loss: [0.350]    Acc: [0.969]
+2349 <Train>  Epoch: [3] Iter: [2345] Step: [149983] Loss: [0.103]    Acc: [0.984]
+2350 <Train>  Epoch: [3] Iter: [2346] Step: [150000] Loss: [0.004]    Acc: [1.000]
+```
 
-#### rnn_attention
-
-![rnn_attention](data/rnn_attention.png)
-
+```angular2html
+2354 <Test>   Iter: [1] Loss: [0.030]     Acc: [1.000]
+2355 <Test>   Iter: [2] Loss: [0.152]     Acc: [0.938]
+2356 <Test>   Iter: [3] Loss: [0.060]     Acc: [0.984]
+2357 <Test>   Iter: [4] Loss: [0.101]     Acc: [0.953]
+2358 <Test>   Iter: [5] Loss: [0.017]     Acc: [1.000]
+2359 <Test>   Iter: [6] Loss: [0.088]     Acc: [0.969]
+2360 <Test>   Iter: [7] Loss: [0.018]     Acc: [1.000]
+2361 <Test>   Iter: [8] Loss: [0.071]     Acc: [0.969]
+2362 <Test>   Iter: [9] Loss: [0.190]     Acc: [0.953]
+2363 <Test>   Iter: [10] Loss: [0.062]    Acc: [0.969]
+```
 
 ### 参考文献及Demo
 
