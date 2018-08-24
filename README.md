@@ -1,6 +1,6 @@
 # tf_classification 基于字符级中文文本常见BaseLine汇集
 
-针对相同[数据集](https://pan.baidu.com/share/init?surl=hugrfRu)分别采用**CNN**, **RNN**, **RNN Attention机制**进行分类
+针对相同[数据集](http://thuctc.thunlp.org)分别采用**CNN**, **RNN**, **RNN Attention机制**进行分类
 
 ### 环境　推荐[Anaconda mini管理](https://www.jianshu.com/p/169403f7e40c)
 
