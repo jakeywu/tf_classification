@@ -35,25 +35,30 @@ class RnnModel(object):
                 cell_fw=cell_fw, cell_bw=cell_bw, inputs=self.embedded_inputs, sequence_length=self.sequence_length,
                 dtype=tf.float32, time_major=False
             )
-            bi_outputs = tf.nn.dropout(tf.concat([output_fw, output_bw], axis=-1), self.keep_prob)
-            last_state = bi_outputs[:, -1, :]
+            last_outputs = self.__last_seq_timestep(tf.concat([output_fw, output_bw], axis=-1))
         with tf.variable_scope("dense"):
-            outputs = tf.layers.dense(last_state, self._config.dense_units, activation=tf.nn.tanh)
+            outputs = tf.nn.dropout(
+                tf.layers.dense(last_outputs, 2 * self._config.num_hidden, activation=tf.nn.tanh), self.keep_prob)
         with tf.variable_scope("logits"):
-            w = tf.get_variable(name="w", shape=[self._config.dense_units, self._config.num_classes],
+            w = tf.get_variable(name="w", shape=[2 * self._config.num_hidden, self._config.num_classes],
                                 dtype=tf.float32, initializer=tf.truncated_normal_initializer(stddev=0.1))
             b = tf.get_variable(name="b", shape=[self._config.num_classes], dtype=tf.float32)
             self.logits = tf.matmul(outputs, w, name="logits") + b
             self.predictions = tf.argmax(self.logits, 1, name="predictions")
 
+    def __last_seq_timestep(self, bi_outputs):
+        index = tf.range(start=tf.constant(0, dtype=tf.int32), limit=tf.shape(bi_outputs)[0])
+        index_seq = tf.stack([index, self.sequence_length-1], axis=1)
+        return tf.gather_nd(bi_outputs, index_seq)
+
     def _build_train_op(self):
-        with tf.variable_scope("loss"):
+        with tf.variable_scope("optimize"):
             losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.targets)
             self.loss = tf.reduce_mean(losses)
+            self.train_op = tf.train.AdamOptimizer(self._config.learning_rate).minimize(self.loss)
         with tf.variable_scope("accuracy"):
             correct_predictions = tf.equal(tf.cast(self.predictions, tf.int32), self.targets)
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32), name="accuracy")
-        self.train_op = tf.train.AdamOptimizer(self._config.learning_rate).minimize(self.loss)
 
     def _save(self):
         if not tf.gfile.Exists(self.checkpointDir):
